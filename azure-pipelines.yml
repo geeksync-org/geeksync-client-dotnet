@@ -1,0 +1,75 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+- feature/*
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+  major: 0
+  minor: 1
+
+stages:
+- stage:
+  displayName: Versioning
+  jobs:
+  - job: VersionNonMaster
+    displayName: Set version (non-master)
+    condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+    variables:
+       prpatch: $[counter(variables['system.pullrequest.pullrequestid'], 0)]
+       brpatch: $[counter(variables['build.sourcebranchname'], 0)]
+    steps:
+      - bash: |
+           echo "##vso[build.updatebuildnumber]$(major).$(minor)-PullRequest.$(prpatch)"
+        condition: eq(variables['Build.Reason'], 'PullRequest')
+        name: SetPRBuildName
+      - bash: |
+           echo "##vso[build.updatebuildnumber]$(major).$(minor)-$(Build.SourceBranchName).$(brpatch)"
+        condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['Build.Reason'], 'PullRequest'))
+        name: SetBranchBuildName
+  - job: VersionMaster
+    displayName: Set version (master)
+    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    variables:
+       patch: $[counter(variables['minor'], 0)]
+    steps:
+      - bash: |
+           echo "##vso[build.updatebuildnumber]$(major).$(minor).$(patch)"
+        name: SetMasterBuildName
+        
+- stage: Build
+  displayName: Build & package
+  condition: always()
+  jobs:  
+  - job: Build
+    displayName: Build, test and publish
+    steps:   
+      - script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/geeksync-client-dotnet GeekSyncClient/GeekSyncClient.csproj
+        displayName: 'Build and publish'
+      - script: dotnet pack -p:PackageVersion=$(Build.BuildNumber) --output $(Build.ArtifactStagingDirectory)/nupkgs GeekSyncClient/GeekSyncClient.csproj
+        displayName: Create NuGet package
+      - task: DotNetCoreCLI@2
+        displayName: Unit test
+        continueOnError: false
+        inputs:
+          command: 'test'
+          testRunTitle: 'Unit test'
+      - task: CopyFiles@2
+        displayName: Copy Dockerfile
+        inputs:
+          contents: Dockerfile
+          targetFolder: $(Build.ArtifactStagingDirectory)
+      - task: PublishBuildArtifacts@1
+        displayName: Publish artifacts
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+          artifactName: 'drop' 
+
+      
