@@ -53,7 +53,7 @@ stages:
     steps:   
       - script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/geeksync-client-dotnet GeekSyncClient/GeekSyncClient.csproj
         displayName: 'Build and publish'
-      - script: dotnet pack -p:PackageVersion=$(buildNumber) --output $(Build.ArtifactStagingDirectory)/nupkgs
+      - script: dotnet pack -p:PackageVersion=$(Build.BuildNumber) --output $(Build.ArtifactStagingDirectory)/nupkgs GeekSyncClient/GeekSyncClient.csproj
         displayName: Create NuGet package
       - task: DotNetCoreCLI@2
         displayName: Unit test
