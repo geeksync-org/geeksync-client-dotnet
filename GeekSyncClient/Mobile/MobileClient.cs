@@ -44,8 +44,8 @@ namespace GeekSyncClient.Mobile
         {
             //TODO: better error handling
             MessagePayload payload=new MessagePayload();
-            payload.pairingID=this.pairingID;
-            payload.message=message;
+            payload.PairingID=this.pairingID;
+            payload.Message=message;
             client.Channel2Async(payload);
         }
     }
