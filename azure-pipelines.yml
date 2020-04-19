@@ -6,6 +6,7 @@
 trigger:
 - master
 - feature/*
+- bugfix/*
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -17,26 +18,31 @@ variables:
 
 stages:
 - stage:
-  displayName: Versioning
+  displayName: Versioning (non-master)
+  condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
   jobs:
   - job: VersionNonMaster
-    displayName: Set version (non-master)
-    condition: ne(variables['Build.SourceBranch'], 'refs/heads/master')
+    displayName: Set version
+    
     variables:
-       prpatch: $[counter(variables['system.pullrequest.pullrequestid'], 0)]
+       prpatch: $[counter(variables['system.pullrequest.pullrequestnumber'], 0)]
        brpatch: $[counter(variables['build.sourcebranchname'], 0)]
     steps:
       - bash: |
-           echo "##vso[build.updatebuildnumber]$(major).$(minor)-PullRequest.$(prpatch)"
+           echo "##vso[build.updatebuildnumber]$(major).$(minor)-PullRequest-$(System.PullRequest.PullRequestNumber).$(prpatch)"
         condition: eq(variables['Build.Reason'], 'PullRequest')
         name: SetPRBuildName
       - bash: |
            echo "##vso[build.updatebuildnumber]$(major).$(minor)-$(Build.SourceBranchName).$(brpatch)"
         condition: and(ne(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['Build.Reason'], 'PullRequest'))
         name: SetBranchBuildName
+- stage:
+  displayName: Versioning (master)
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+  jobs:        
   - job: VersionMaster
-    displayName: Set version (master)
-    condition: eq(variables['Build.SourceBranch'], 'refs/heads/master')
+    displayName: Set version
+    
     variables:
        patch: $[counter(variables['minor'], 0)]
     steps:
