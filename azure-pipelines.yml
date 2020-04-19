@@ -25,11 +25,11 @@ stages:
     displayName: Set version
     
     variables:
-       prpatch: $[counter(variables['system.pullrequest.pullrequestid'], 0)]
+       prpatch: $[counter(variables['system.pullrequest.pullrequestnumber'], 0)]
        brpatch: $[counter(variables['build.sourcebranchname'], 0)]
     steps:
       - bash: |
-           echo "##vso[build.updatebuildnumber]$(major).$(minor)-PullRequest-$(Build.SourceBranchName).$(prpatch)"
+           echo "##vso[build.updatebuildnumber]$(major).$(minor)-PullRequest-$(System.PullRequestNumber).$(prpatch)"
         condition: eq(variables['Build.Reason'], 'PullRequest')
         name: SetPRBuildName
       - bash: |
