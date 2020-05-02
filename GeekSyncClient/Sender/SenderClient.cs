@@ -1,8 +1,8 @@
 using System;
 
-namespace GeekSyncClient.Mobile
+namespace GeekSyncClient.Sender
 {
-    public class MobileClient
+    public class SenderClient
     {
         private sync_serviceClient client;
         public System.Net.Http.HttpClient httpClient { get; }
@@ -18,7 +18,7 @@ namespace GeekSyncClient.Mobile
         public System.Collections.Generic.ICollection<string> Desktops { get { return _channelInfo.Desktops; } }
 
 
-        public MobileClient(Guid pairingID, string desktopName, string baseUrl)
+        public SenderClient(Guid pairingID, string desktopName, string baseUrl)
         {
             this.pairingID = pairingID;
             httpClient = new System.Net.Http.HttpClient();
@@ -26,7 +26,7 @@ namespace GeekSyncClient.Mobile
             _channelInfo = RefreshChannelInfo();
         }
 
-        public MobileClient(Guid pairingID, string desktopName, string baseUrl, System.Net.Http.HttpClient httpClient)
+        public SenderClient(Guid pairingID, string desktopName, string baseUrl, System.Net.Http.HttpClient httpClient)
         {
             this.pairingID = pairingID;
             this.httpClient = httpClient;

@@ -9,9 +9,9 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GeekSyncClient.Dekstop
+namespace GeekSyncClient.Receiver
 {
-    public class DesktopClient
+    public class ReceiverClient
     {
         private sync_serviceClient client;
         public System.Net.Http.HttpClient httpClient { get; }
@@ -24,7 +24,7 @@ namespace GeekSyncClient.Dekstop
         private Dictionary<Guid, ChannelInfo> pairings = new Dictionary<Guid, ChannelInfo>();
         private Dictionary<Guid,WebsocketClient> websockets =new Dictionary<Guid, WebsocketClient>();
 
-        public DesktopClient(Guid desktopID, string desktopName, string baseUrl)
+        public ReceiverClient(Guid desktopID, string desktopName, string baseUrl)
         {
             this.desktopID = desktopID;
             this.desktopName = desktopName;
@@ -32,7 +32,7 @@ namespace GeekSyncClient.Dekstop
             client = new sync_serviceClient(baseUrl, httpClient);
         }
 
-        public DesktopClient(Guid desktopID, string desktopName, string baseUrl, System.Net.Http.HttpClient httpClient)
+        public ReceiverClient(Guid desktopID, string desktopName, string baseUrl, System.Net.Http.HttpClient httpClient)
         {
             this.desktopID = desktopID;
             this.desktopName = desktopName;
