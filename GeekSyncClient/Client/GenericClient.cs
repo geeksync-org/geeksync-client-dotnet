@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GeekSyncClient.Client
 {
@@ -36,7 +38,9 @@ namespace GeekSyncClient.Client
 
             try
             {
-                client.ChannelAsync(this.ChannelID).RunSynchronously();
+
+                var task = Task.Run(async () => { await Client.ChannelAsync(ChannelID); });
+                task.Wait();
                 avail = true;
             }
             catch
