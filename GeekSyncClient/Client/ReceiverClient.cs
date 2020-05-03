@@ -25,7 +25,9 @@ namespace GeekSyncClient.Client
         public void Connect()
         {
 
-            Client.Channel2Async(ChannelID).RunSynchronously();
+
+            var task = Task.Run(async () => { await Client.Channel2Async(ChannelID); });
+            task.Wait();
 
 
 
@@ -50,8 +52,9 @@ namespace GeekSyncClient.Client
 
         public void Disconnect()
         {
+            var task = Task.Run(async () => { await Client.Channel3Async(ChannelID); });
+            task.Wait();
 
-            Client.Channel3Async(ChannelID).RunSynchronously();
         }
 
         private void HandleMessage(ResponseMessage msg)
