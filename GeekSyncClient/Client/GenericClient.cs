@@ -36,7 +36,9 @@ namespace GeekSyncClient.Client
 
             try
             {
-                client.ChannelAsync(this.ChannelID).RunSynchronously();
+
+                var task = Task.Run(async () => { await Client.ChannelAsync(ChannelID); });
+                task.Wait();
                 avail = true;
             }
             catch
