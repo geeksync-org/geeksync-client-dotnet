@@ -31,7 +31,7 @@ namespace GeekSyncClient.Client
 
 
 
-            string ws_url = Client.BaseUrl.TrimEnd('/') + "/ws/" + ChannelID.ToString();
+            string ws_url = Client.BaseUrl.Replace("http:","ws:").Replace("https:","wss:").TrimEnd('/') + "/ws/" + ChannelID.ToString();
 
             //var exitEvent = new ManualResetEvent(false);
 
