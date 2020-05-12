@@ -1,6 +1,6 @@
 using System;
 using System.Net.WebSockets;
-using System.Reactive.Linq;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
