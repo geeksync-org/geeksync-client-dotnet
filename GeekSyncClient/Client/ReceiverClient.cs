@@ -1,15 +1,18 @@
 using System;
-using Websocket.Client;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
+using System.Text.Encodings;
 
 namespace GeekSyncClient.Client
 {
     public class ReceiverClient : GenericClient
     {
-        public WebsocketClient webSocketClient;
+        public ClientWebSocket webSocketClient;
+
+        public Task ReceiveTask;
 
         public Action<string> MessageReceived;
 
@@ -26,28 +29,54 @@ namespace GeekSyncClient.Client
         {
 
 
-            var task = Task.Run(async () => { await Client.Channel2Async(ChannelID); });
-            task.Wait();
+            var task1 = Task.Run(async () => { await Client.Channel2Async(ChannelID); });
+            task1.Wait();
 
 
 
-            string ws_url = Client.BaseUrl.Replace("http:","ws:").Replace("https:","wss:").TrimEnd('/') + "/ws/" + ChannelID.ToString();
+            string ws_url = Client.BaseUrl.Replace("http:", "ws:").Replace("https:", "wss:").TrimEnd('/') + "/ws/" + ChannelID.ToString();
 
-            //var exitEvent = new ManualResetEvent(false);
+            var task2 = Task.Run(async () => { await openWebSocket(new Uri(ws_url)); });
+            task2.Wait();
 
-            webSocketClient = new WebsocketClient(new Uri(ws_url));
+            ReceiveTask=Task.Run(async() =>{await Receive(webSocketClient);});
+           
+        }
 
+        public async Task openWebSocket(Uri uri)
+        {
+            webSocketClient = new ClientWebSocket();
 
-            webSocketClient.ReconnectTimeout = TimeSpan.FromSeconds(30);
-            webSocketClient.ReconnectionHappened.Subscribe(info =>
+            //webSocketClient.Options.SetRequestHeader(headerName: "predix-zone-id", headerValue: PREDIX_ZONE_ID_HERE);
+            //webSocketClient.Options.SetRequestHeader(headerName: "authorization", headerValue: "Bearer " + AUTH_TOKEN_HERE);
+            //webSocketClient.Options.SetRequestHeader(headerName: "content-type", headerValue: "application/json");
+            CancellationToken token = new CancellationToken();
+            await webSocketClient.ConnectAsync(uri: uri, cancellationToken: token);
 
+        }
 
-            webSocketClient.MessageReceived.Subscribe(msg => this.HandleMessage(msg)));
-            webSocketClient.Start();
+        private async Task Receive(ClientWebSocket socket)
+        {
+            var buffer = new ArraySegment<byte>(new byte[2048]);
+            do
+            {
+                WebSocketReceiveResult result;
+                using (var ms = new MemoryStream())
+                {
+                    do
+                    {
+                        result = await socket.ReceiveAsync(buffer, CancellationToken.None);
+                        ms.Write(buffer.Array, buffer.Offset, result.Count);
+                    } while (!result.EndOfMessage);
 
-            //Task.Run(() => client.Send("{ message }"));
+                    if (result.MessageType == WebSocketMessageType.Close)
+                        break;
 
-            //exitEvent.WaitOne();
+                    ms.Seek(0, SeekOrigin.Begin);
+                    using (var reader = new StreamReader(ms)) MessageReceived(await reader.ReadToEndAsync());
+                        //Console.WriteLine(await reader.ReadToEndAsync());
+                }
+            } while (true);
         }
 
         public void Disconnect()
@@ -57,9 +86,6 @@ namespace GeekSyncClient.Client
 
         }
 
-        private void HandleMessage(ResponseMessage msg)
-        {
-            MessageReceived(msg.Text);
-        }
+        
     }
 }

@@ -17,7 +17,6 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="NSwag.ApiDescription.Client" Version="13.0.5" />
-    <PackageReference Include="Websocket.Client" Version="4.1.85" />
   </ItemGroup>
   <ItemGroup>
     <OpenApiReference Include="../geeksync-server-api.json" />
