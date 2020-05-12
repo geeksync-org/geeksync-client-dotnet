@@ -9,7 +9,7 @@ namespace GeekSyncClient.Client
 {
     public class ReceiverClient : GenericClient
     {
-        private WebsocketClient webSocket;
+        public WebsocketClient webSocketClient;
 
         public Action<string> MessageReceived;
 
@@ -35,15 +35,15 @@ namespace GeekSyncClient.Client
 
             //var exitEvent = new ManualResetEvent(false);
 
-            webSocket = new WebsocketClient(new Uri(ws_url));
+            webSocketClient = new WebsocketClient(new Uri(ws_url));
 
 
-            webSocket.ReconnectTimeout = TimeSpan.FromSeconds(30);
-            webSocket.ReconnectionHappened.Subscribe(info =>
+            webSocketClient.ReconnectTimeout = TimeSpan.FromSeconds(30);
+            webSocketClient.ReconnectionHappened.Subscribe(info =>
 
 
-            webSocket.MessageReceived.Subscribe(msg => this.HandleMessage(msg)));
-            webSocket.Start();
+            webSocketClient.MessageReceived.Subscribe(msg => this.HandleMessage(msg)));
+            webSocketClient.Start();
 
             //Task.Run(() => client.Send("{ message }"));
 
