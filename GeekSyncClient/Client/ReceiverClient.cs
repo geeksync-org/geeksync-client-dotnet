@@ -74,13 +74,14 @@ namespace GeekSyncClient.Client
 
                     ms.Seek(0, SeekOrigin.Begin);
                     using (var reader = new StreamReader(ms)) MessageReceived(await reader.ReadToEndAsync());
-                        //Console.WriteLine(await reader.ReadToEndAsync());
+                    
                 }
             } while (true);
         }
 
         public void Disconnect()
         {
+            //TODO: check how to close WebSocket nicely
             var task = Task.Run(async () => { await Client.Channel3Async(ChannelID); });
             task.Wait();
 
