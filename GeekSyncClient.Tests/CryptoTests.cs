@@ -3,6 +3,7 @@ using Xunit;
 using System;
 using System.Threading;
 using GeekSyncClient.Helper;
+using GeekSyncClient.Client;
 using System.Xml.Linq;
 
 namespace GeekSyncClient.UnitTests
@@ -102,6 +103,27 @@ namespace GeekSyncClient.UnitTests
 
             byte[] signature = sender.Sign(original);
             Assert.True(receiver.Verify(original,signature));
+
+        }
+
+        [Fact]
+        public void RSAHelperCrossSignedMessageE2E()
+        {
+            RSAHelper receiver = new RSAHelper();
+            RSAHelper sender = new RSAHelper();
+
+            sender.SetPeerPublicKey(receiver.MyPublicKey);
+            receiver.SetPeerPublicKey(sender.MyPublicKey);
+
+
+            string original = "This is test message";
+
+            SignedMessage signedMessage=sender.EncryptAndSign(original);
+
+            string decrypted=receiver.VerifyAndDecrypt(signedMessage);
+
+            Assert.Equal(original,decrypted);
+
 
         }
 

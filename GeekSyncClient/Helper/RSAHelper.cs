@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using System;
+using GeekSyncClient.Client;
 
 namespace GeekSyncClient.Helper
 {
@@ -77,6 +78,33 @@ namespace GeekSyncClient.Helper
         }
 
 
+        public SignedMessage EncryptAndSign(string message)
+        {
+            SignedMessage signedMessage=new SignedMessage();
+            byte[] encrypytedMessage=Encrypt(message);
+            byte[] signature=Sign(encrypytedMessage);
+            signedMessage.Message=Convert.ToBase64String(encrypytedMessage);
+            signedMessage.Signature=Convert.ToBase64String(signature);
+            return signedMessage;
+        }
+
+        public string VerifyAndDecrypt(SignedMessage signedMessage)
+        {
+            byte[] signature=Convert.FromBase64String(signedMessage.Signature);
+            byte[] encrypytedMessage=Convert.FromBase64String(signedMessage.Message);
+
+            if (Verify(encrypytedMessage,signature))
+            {
+                return Decrypt(encrypytedMessage);
+
+            }
+            else
+            {
+                return "Error: peer verification failed.";
+            }
+        }
+
+     
 
 
     }
