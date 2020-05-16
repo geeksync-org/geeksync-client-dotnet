@@ -16,13 +16,13 @@ namespace GeekSyncClient.Client
 
         public Action<string> MessageReceived;
 
-        public ReceiverClient(Guid channelID, string baseUrl)
-            : base(channelID, baseUrl)
+        public ReceiverClient(ConfigManager config,Guid channelID, string baseUrl)
+            : base(config,channelID, baseUrl)
         {
         }
 
-        public ReceiverClient(Guid channelID, string baseUrl, System.Net.Http.HttpClient httpClient)
-            : base(channelID, baseUrl, httpClient)
+        public ReceiverClient(ConfigManager config,Guid channelID, string baseUrl, System.Net.Http.HttpClient httpClient)
+            : base(config,channelID, baseUrl, httpClient)
         { }
 
         public void Connect()
@@ -73,7 +73,7 @@ namespace GeekSyncClient.Client
                         break;
 
                     ms.Seek(0, SeekOrigin.Begin);
-                    using (var reader = new StreamReader(ms)) MessageReceived(await reader.ReadToEndAsync());
+                    using (var reader = new StreamReader(ms)) MessageReceived(MyRSA.VerifyAndDecrypt(SignedMessage.FromJSONString( await reader.ReadToEndAsync())));
                     
                 }
             } while (true);

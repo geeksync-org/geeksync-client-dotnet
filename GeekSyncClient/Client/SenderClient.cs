@@ -5,20 +5,20 @@ namespace GeekSyncClient.Client
     public class SenderClient:GenericClient
     {
 
-        public SenderClient(Guid channelID, string baseUrl)
-            :base (channelID,baseUrl)
+        public SenderClient(ConfigManager config,Guid channelID, string baseUrl)
+            :base (config,channelID,baseUrl)
         {
         }
 
-        public SenderClient(Guid channelID, string baseUrl, System.Net.Http.HttpClient httpClient)
-            :base (channelID,baseUrl,httpClient)  
+        public SenderClient(ConfigManager config,Guid channelID, string baseUrl, System.Net.Http.HttpClient httpClient)
+            :base (config,channelID,baseUrl,httpClient)  
         {}     
          public void SendMessage(string message)
         {
             //TODO: better error handling
             if (CheckIfAvailable())
             {
-                Client.Channel4Async(this.ChannelID, message);
+                Client.Channel4Async(this.ChannelID, MyRSA.EncryptAndSign(message).ToJSONString());
             }
         }
     }
