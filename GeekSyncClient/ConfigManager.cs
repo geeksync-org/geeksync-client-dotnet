@@ -24,7 +24,7 @@ namespace GeekSyncClient
 
                 RSAHelper tempRSA = new RSAHelper();
 
-                Config.RSAkeys = tempRSA.rsaMe.ToXmlString(true);
+                Config.RSAkeys = tempRSA.KeysXml;
                 Config.MyID = Guid.NewGuid();
                 Config.MyPublicKey=tempRSA.MyPublicKey;
 

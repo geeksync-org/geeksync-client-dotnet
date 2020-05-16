@@ -9,13 +9,15 @@ namespace GeekSyncClient.Helper
         public RSA rsaMe;
         public RSA rsaPeer;
 
-        public readonly string MyPublicKey;
+        public string MyPublicKey {get {return Convert.ToBase64String(rsaMe.ExportRSAPublicKey());}}
+
+        public string KeysXml {get {return rsaMe.ToXmlString(true);}}
 
         public RSAHelper()
         {
             rsaMe = RSA.Create();
             rsaPeer=RSA.Create();
-            MyPublicKey= Convert.ToBase64String(rsaMe.ExportRSAPublicKey());
+            //MyPublicKey= Convert.ToBase64String(rsaMe.ExportRSAPublicKey());
             rsaPeer.FromXmlString(rsaMe.ToXmlString(true));
         }
 
@@ -24,7 +26,7 @@ namespace GeekSyncClient.Helper
             rsaMe = RSA.Create();
             rsaPeer=RSA.Create();
             rsaMe.FromXmlString(xmlKeyData);
-            MyPublicKey= Convert.ToBase64String(rsaMe.ExportRSAPublicKey());
+            //MyPublicKey= Convert.ToBase64String(rsaMe.ExportRSAPublicKey());
             rsaPeer.FromXmlString(rsaMe.ToXmlString(true));
         }
 

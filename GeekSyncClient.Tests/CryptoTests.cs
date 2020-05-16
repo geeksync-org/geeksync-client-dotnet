@@ -14,7 +14,7 @@ namespace GeekSyncClient.UnitTests
         public void CreateRSAHelperDefault()
         {
             RSAHelper helper = new RSAHelper();
-            string xml = helper.rsaMe.ToXmlString(true);
+            string xml = helper.KeysXml;
             XDocument xd = XDocument.Parse(xml);
             XElement firstNode = (XElement)xd.FirstNode;
             Assert.Equal("RSAKeyValue", firstNode.Name);
@@ -25,14 +25,14 @@ namespace GeekSyncClient.UnitTests
         public void CreateRSAHelperKeyFromXML()
         {
             RSAHelper helper1 = new RSAHelper();
-            string xml1 = helper1.rsaMe.ToXmlString(true);
+            string xml1 = helper1.KeysXml;
             XDocument xd1 = XDocument.Parse(xml1);
             XElement firstNode1 = (XElement)xd1.FirstNode;
 
             Assert.Equal("RSAKeyValue", firstNode1.Name);
 
             RSAHelper helper2 = new RSAHelper(xml1);
-            string xml2 = helper2.rsaMe.ToXmlString(true);
+            string xml2 = helper2.KeysXml;
 
             XDocument xd2 = XDocument.Parse(xml2);
             XElement firstNode2 = (XElement)xd2.FirstNode;
