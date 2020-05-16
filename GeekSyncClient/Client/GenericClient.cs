@@ -1,6 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using GeekSyncClient.Helper;
+using System.Linq;
 
 namespace GeekSyncClient.Client
 {
@@ -11,6 +13,9 @@ namespace GeekSyncClient.Client
         public geeksync_server_apiClient Client {get {return client;}}
         public System.Net.Http.HttpClient httpClient { get; }
 
+        public RSAHelper MyRSA;
+        private ConfigManager configManager;
+
         private bool isAvailable;
 
         public bool IsAvailable { get { return isAvailable; } }
@@ -18,18 +23,28 @@ namespace GeekSyncClient.Client
 
         public Guid ChannelID{ get; }
 
-        public GenericClient(Guid channelID, string baseUrl)
+        public GenericClient(ConfigManager config,Guid channelID, string baseUrl)
         {
             this.ChannelID = channelID;
             httpClient = new System.Net.Http.HttpClient();
             client = new geeksync_server_apiClient(baseUrl, httpClient);
+            this.configManager=config;
+            SetupRSA();
         }
 
-        public GenericClient(Guid channelID, string baseUrl, System.Net.Http.HttpClient httpClient)
+        public GenericClient(ConfigManager config,Guid channelID, string baseUrl, System.Net.Http.HttpClient httpClient)
         {
             this.ChannelID = channelID;
             this.httpClient = httpClient;
             client = new geeksync_server_apiClient(baseUrl, httpClient);
+            this.configManager=config;
+            SetupRSA();
+        }
+
+        private void SetupRSA()
+        {
+            MyRSA=new RSAHelper(configManager.Config.RSAkeys);
+            MyRSA.SetPeerPublicKey(configManager.Config.Peers.Single(x=>x.ChannelID==ChannelID).PeerPublicKey);
         }
 
         public bool CheckIfAvailable()
