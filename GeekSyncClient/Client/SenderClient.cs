@@ -18,7 +18,8 @@ namespace GeekSyncClient.Client
             //TODO: better error handling
             if (CheckIfAvailable())
             {
-                Client.Channel4Async(this.ChannelID, MyRSA.EncryptAndSign(message).ToJSONString());
+                //string msg=.ToJSONString();
+                Client.Channel4Async(this.ChannelID, MyRSA.EncryptAndSign(message));
             }
         }
     }
