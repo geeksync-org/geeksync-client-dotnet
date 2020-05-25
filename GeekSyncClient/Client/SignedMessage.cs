@@ -1,6 +1,5 @@
 using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 
 namespace GeekSyncClient.Client
@@ -12,11 +11,11 @@ namespace GeekSyncClient.Client
 
         public string ToJSONString()
         {
-            return JsonSerializer.Serialize(this);
+            return JsonConvert.SerializeObject(this);
         }
         public static SignedMessage FromJSONString(string jsonString)
         {
-            SignedMessage message=JsonSerializer.Deserialize<SignedMessage>(jsonString);
+            SignedMessage message=JsonConvert.DeserializeObject<SignedMessage>(jsonString);
             return message;
         }
     }

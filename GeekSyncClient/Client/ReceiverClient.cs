@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
-using System.Text.Encodings;
+
 
 namespace GeekSyncClient.Client
 {

@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using GeekSyncClient.Config;
 using GeekSyncClient.Helper;
+using Newtonsoft.Json;
 
 namespace GeekSyncClient
 {
@@ -20,7 +19,7 @@ namespace GeekSyncClient
             StreamReader sr = config.OpenText();
             string configtext = sr.ReadToEnd();
             sr.Close();
-            Config = JsonSerializer.Deserialize<ClientConfig>(configtext);
+            Config = JsonConvert.DeserializeObject<ClientConfig>(configtext);
         }
 
         public void WriteConfig()
@@ -28,7 +27,7 @@ namespace GeekSyncClient
             FileInfo config = new FileInfo(configFileName);
             config.Delete();
             string jsonString;
-            jsonString = JsonSerializer.Serialize(Config);
+            jsonString = JsonConvert.SerializeObject(Config);
             StreamWriter sw = config.AppendText();
             sw.WriteLine(jsonString);
             sw.Close();
