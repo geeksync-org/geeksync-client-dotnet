@@ -16,16 +16,16 @@ namespace GeekSyncClient.Helper
 
         public RSAHelper()
         {
-            rsaMe = new RSACryptoServiceProvider(4096);
-            rsaPeer= new RSACryptoServiceProvider(4096);
+            rsaMe = new RSACryptoServiceProvider(1024);
+            rsaPeer= new RSACryptoServiceProvider(1024);
             //MyPublicKey= Convert.ToBase64String(rsaMe.ExportRSAPublicKey());
             rsaPeer.FromXmlString(rsaMe.ToXmlString(true));
         }
 
         public RSAHelper(string xmlKeyData)
         {
-            rsaMe = new RSACryptoServiceProvider(4096);
-            rsaPeer = new RSACryptoServiceProvider(4096);
+            rsaMe = new RSACryptoServiceProvider(1024);
+            rsaPeer = new RSACryptoServiceProvider(1024);
             rsaMe.FromXmlString(xmlKeyData);
             //MyPublicKey= Convert.ToBase64String(rsaMe.ExportRSAPublicKey());
             rsaPeer.FromXmlString(rsaMe.ToXmlString(true));
@@ -43,7 +43,7 @@ namespace GeekSyncClient.Helper
         }
         public byte[] Sign(byte[] data)
         {
-            return rsaMe.SignData(data,HashAlgorithmName.SHA256,RSASignaturePadding.Pss);
+            return rsaMe.SignData(data,HashAlgorithmName.SHA256,RSASignaturePadding.Pkcs1);
         }
 
         public bool Verify(string message, byte[] signature)
@@ -54,7 +54,7 @@ namespace GeekSyncClient.Helper
 
         public bool Verify(byte[] data, byte[] signature)
         {
-            return rsaPeer.VerifyData(data,signature,HashAlgorithmName.SHA256,RSASignaturePadding.Pss);
+            return rsaPeer.VerifyData(data,signature,HashAlgorithmName.SHA256,RSASignaturePadding.Pkcs1);
 
         }
 
@@ -66,13 +66,13 @@ namespace GeekSyncClient.Helper
 
         public byte[] Encrypt(byte[] data)
         {
-            return rsaPeer.Encrypt(data, RSAEncryptionPadding.OaepSHA256);
+            return rsaPeer.Encrypt(data, RSAEncryptionPadding.Pkcs1);
 
         }
 
         public string Decrypt(byte[] encrypytedMessage)
         {
-            byte[] bytes = rsaMe.Decrypt(encrypytedMessage, RSAEncryptionPadding.OaepSHA256);
+            byte[] bytes = rsaMe.Decrypt(encrypytedMessage, RSAEncryptionPadding.Pkcs1);
             return Encoding.UTF8.GetString(bytes);
         }
 
