@@ -7,34 +7,33 @@ namespace GeekSyncClient.Helper
 {
     public class RSAHelper
     {
-        public RSA rsaMe;
-        public RSA rsaPeer;
+        public RSACryptoServiceProvider rsaMe;
+        public RSACryptoServiceProvider rsaPeer;
 
-        public string MyPublicKey {get {return Convert.ToBase64String(rsaMe.ExportRSAPublicKey());}}
+        public string MyPublicKey {get {return Convert.ToBase64String(rsaMe.ExportCspBlob(false));}}
 
         public string KeysXml {get {return rsaMe.ToXmlString(true);}}
 
         public RSAHelper()
         {
-            rsaMe = RSA.Create();
-            rsaPeer=RSA.Create();
+            rsaMe = new RSACryptoServiceProvider(1024);
+            rsaPeer= new RSACryptoServiceProvider(1024);
             //MyPublicKey= Convert.ToBase64String(rsaMe.ExportRSAPublicKey());
             rsaPeer.FromXmlString(rsaMe.ToXmlString(true));
         }
 
         public RSAHelper(string xmlKeyData)
         {
-            rsaMe = RSA.Create();
-            rsaPeer=RSA.Create();
+            rsaMe = new RSACryptoServiceProvider(1024);
+            rsaPeer = new RSACryptoServiceProvider(1024);
             rsaMe.FromXmlString(xmlKeyData);
             //MyPublicKey= Convert.ToBase64String(rsaMe.ExportRSAPublicKey());
             rsaPeer.FromXmlString(rsaMe.ToXmlString(true));
         }
 
         public void SetPeerPublicKey(string peerPublicKey)
-        {
-            int i = 0;
-            rsaPeer.ImportRSAPublicKey(Convert.FromBase64String(peerPublicKey), out i);
+        { 
+            rsaPeer.ImportCspBlob(Convert.FromBase64String(peerPublicKey));
         }
 
 
@@ -44,7 +43,7 @@ namespace GeekSyncClient.Helper
         }
         public byte[] Sign(byte[] data)
         {
-            return rsaMe.SignData(data,HashAlgorithmName.SHA256,RSASignaturePadding.Pss);
+            return rsaMe.SignData(data,HashAlgorithmName.SHA256,RSASignaturePadding.Pkcs1);
         }
 
         public bool Verify(string message, byte[] signature)
@@ -55,7 +54,7 @@ namespace GeekSyncClient.Helper
 
         public bool Verify(byte[] data, byte[] signature)
         {
-            return rsaPeer.VerifyData(data,signature,HashAlgorithmName.SHA256,RSASignaturePadding.Pss);
+            return rsaPeer.VerifyData(data,signature,HashAlgorithmName.SHA256,RSASignaturePadding.Pkcs1);
 
         }
 
@@ -67,13 +66,13 @@ namespace GeekSyncClient.Helper
 
         public byte[] Encrypt(byte[] data)
         {
-            return rsaPeer.Encrypt(data, RSAEncryptionPadding.OaepSHA256);
+            return rsaPeer.Encrypt(data, RSAEncryptionPadding.Pkcs1);
 
         }
 
         public string Decrypt(byte[] encrypytedMessage)
         {
-            byte[] bytes = rsaMe.Decrypt(encrypytedMessage, RSAEncryptionPadding.OaepSHA256);
+            byte[] bytes = rsaMe.Decrypt(encrypytedMessage, RSAEncryptionPadding.Pkcs1);
             return Encoding.UTF8.GetString(bytes);
         }
 
