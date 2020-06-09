@@ -7,34 +7,33 @@ namespace GeekSyncClient.Helper
 {
     public class RSAHelper
     {
-        public RSA rsaMe;
-        public RSA rsaPeer;
+        public RSACryptoServiceProvider rsaMe;
+        public RSACryptoServiceProvider rsaPeer;
 
-        public string MyPublicKey {get {return Convert.ToBase64String(rsaMe.ExportRSAPublicKey());}}
+        public string MyPublicKey {get {return Convert.ToBase64String(rsaMe.ExportCspBlob(false));}}
 
         public string KeysXml {get {return rsaMe.ToXmlString(true);}}
 
         public RSAHelper()
         {
-            rsaMe = RSA.Create();
-            rsaPeer=RSA.Create();
+            rsaMe = new RSACryptoServiceProvider(4096);
+            rsaPeer= new RSACryptoServiceProvider(4096);
             //MyPublicKey= Convert.ToBase64String(rsaMe.ExportRSAPublicKey());
             rsaPeer.FromXmlString(rsaMe.ToXmlString(true));
         }
 
         public RSAHelper(string xmlKeyData)
         {
-            rsaMe = RSA.Create();
-            rsaPeer=RSA.Create();
+            rsaMe = new RSACryptoServiceProvider(4096);
+            rsaPeer = new RSACryptoServiceProvider(4096);
             rsaMe.FromXmlString(xmlKeyData);
             //MyPublicKey= Convert.ToBase64String(rsaMe.ExportRSAPublicKey());
             rsaPeer.FromXmlString(rsaMe.ToXmlString(true));
         }
 
         public void SetPeerPublicKey(string peerPublicKey)
-        {
-            int i = 0;
-            rsaPeer.ImportRSAPublicKey(Convert.FromBase64String(peerPublicKey), out i);
+        { 
+            rsaPeer.ImportCspBlob(Convert.FromBase64String(peerPublicKey));
         }
 
 
