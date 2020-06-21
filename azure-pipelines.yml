@@ -67,6 +67,11 @@ stages:
           command: 'test'
           arguments: '--collect:"XPlat Code Coverage"'
           testRunTitle: 'Unit test'
+      - task: PublishCodeCoverageResults@1
+        displayName: Publish Coverage report
+        inputs:
+          codeCoverageTool: 'Cobertura'
+          summaryFileLocation: 'TestResults/coverage.cobertura.xml'
       - task: CopyFiles@2
         displayName: Copy Dockerfile
         inputs:
