@@ -71,7 +71,7 @@ stages:
         displayName: Publish Coverage report
         inputs:
           codeCoverageTool: 'Cobertura'
-          summaryFileLocation: 'TestResults/coverage.cobertura.xml'
+          summaryFileLocation: '/home/vsts/work/_temp/**/coverage.cobertura.xml'
       - task: CopyFiles@2
         displayName: Copy Dockerfile
         inputs:
