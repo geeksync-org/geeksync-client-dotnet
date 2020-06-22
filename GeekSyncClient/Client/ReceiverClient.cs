@@ -84,7 +84,12 @@ namespace GeekSyncClient.Client
         public void Disconnect()
         {
             //TODO: check how to close WebSocket nicely
-            var task = Task.Run(async () => { await Client.Channel3Async(ChannelID); });
+
+            
+            var task = Task.Run(async () => { 
+                
+                await webSocketClient.CloseAsync(WebSocketCloseStatus.NormalClosure, "CLOSE",CancellationToken.None);
+                await Client.Channel3Async(ChannelID); });
             task.Wait();
 
         }
