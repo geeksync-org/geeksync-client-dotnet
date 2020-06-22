@@ -8,8 +8,9 @@ using System.Linq;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using System.IO;
+using System.Net.Http;
 
-
+//TODO test httpClient constructors too!
 namespace GeekSyncClient.IntegrationTests
 {
     public class ClientTests
@@ -23,17 +24,16 @@ namespace GeekSyncClient.IntegrationTests
         }
 
         [Fact]
-        public void CheckRandomChannel()
+        public void CheckRandomChannelDefaultConfig()
         {
-            new FileInfo(".test.1.conf").Delete();
-            ConfigManager config = new ConfigManager(".test.1.conf");
+            new FileInfo(".geeksync-client.conf").Delete();
+            ConfigManager config = new ConfigManager();
 
             SenderClient client = new SenderClient(config, config.Config.Peers[0].ChannelID, "http://localhost:5000/");
             client.CheckIfAvailable();
 
             Assert.False(client.IsAvailable);
-            new FileInfo(".test.1.conf").Delete();
-
+            new FileInfo(".geeksync-client.conf").Delete();
         }
 
         [Fact]
@@ -46,6 +46,36 @@ namespace GeekSyncClient.IntegrationTests
 
             SenderClient sender = new SenderClient(config, config.Config.Peers[0].ChannelID, "http://localhost:5000/");
             ReceiverClient receiver = new ReceiverClient(config, config.Config.Peers[0].ChannelID, "http://localhost:5000/");
+
+            sender.CheckIfAvailable();
+            Assert.False(sender.IsAvailable);
+
+            receiver.Connect();
+
+            sender.CheckIfAvailable();
+            Assert.True(sender.IsAvailable);
+
+            receiver.Disconnect();
+
+            sender.CheckIfAvailable();
+            Assert.False(sender.IsAvailable);
+
+            new FileInfo(".test.2.conf").Delete();
+
+        }
+        [Fact]
+        public void ChannelLifecycleHttpClient()
+        {
+            new FileInfo(".test.2.conf").Delete();
+
+            HttpClient httpClient=new HttpClient();
+            httpClient.BaseAddress=new Uri("http://localhost:5000/");
+
+
+            ConfigManager config = new ConfigManager(".test.2.conf");
+
+            SenderClient sender = new SenderClient(config, config.Config.Peers[0].ChannelID,httpClient.BaseAddress.ToString(),httpClient);
+            ReceiverClient receiver = new ReceiverClient(config, config.Config.Peers[0].ChannelID, httpClient.BaseAddress.ToString(),httpClient);
 
             sender.CheckIfAvailable();
             Assert.False(sender.IsAvailable);
