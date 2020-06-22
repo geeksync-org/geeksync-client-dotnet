@@ -65,7 +65,13 @@ stages:
         continueOnError: false
         inputs:
           command: 'test'
+          arguments: '--collect:"XPlat Code Coverage"'
           testRunTitle: 'Unit test'
+      - task: PublishCodeCoverageResults@1
+        displayName: Publish Coverage report
+        inputs:
+          codeCoverageTool: 'Cobertura'
+          summaryFileLocation: '/home/vsts/work/_temp/**/coverage.cobertura.xml'
       - task: CopyFiles@2
         displayName: Copy Dockerfile
         inputs:

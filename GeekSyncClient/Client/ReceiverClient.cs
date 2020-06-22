@@ -37,6 +37,8 @@ namespace GeekSyncClient.Client
             string ws_url = Client.BaseUrl.Replace("http:", "ws:").Replace("https:", "wss:").TrimEnd('/') + "/ws/" + ChannelID.ToString();
 
             var task2 = Task.Run(async () => { await openWebSocket(new Uri(ws_url)); });
+            
+            //TODO: check if this is the reason for AB#168 (or AB#167 too...)
             task2.Wait();
 
             ReceiveTask=Task.Run(async() =>{await Receive(webSocketClient);});
